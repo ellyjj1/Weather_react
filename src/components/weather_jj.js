@@ -1,14 +1,17 @@
 import React, {useState} from 'react';
 import axios from "axios";
 import './weather_jj.css'
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function WeatherJj() {
     const [search, setSearch] = useState("");
     const [weatherData, setWeatherData] = useState()
+    const [backGroundImage, setBackGroundImage] = useState("00")
+    const [status, setstatus] = useState("")
 
     const handleSearch = () => {
-
         if (search) {
             let config = {
                 method: 'get',
@@ -18,16 +21,28 @@ function WeatherJj() {
 
             axios.request(config)
                 .then((response) => {
-                    console.log(JSON.stringify(response.data));
                     setWeatherData(response.data)
+                    setBackGroundImage(response.data.weather[0].icon.substring(0, 2))
+                    setstatus("")
                 })
                 .catch((error) => {
-                    console.log(error);
-                });
+                        if (error.code === "ERR_NETWORK") {
+                            setstatus("Network Error")
+                            console.log(error);
+                        } else if (error.code === "ERR_BAD_REQUEST") {
+                            setstatus("Please enter a valid city name")
+                            console.log(error);
+                        } else {
+                            setstatus("Something went wrong")
+                            console.log(error);
+                        }
+
+                    }
+                );
         }
     };
 
-    const geticon = () => {
+    const getIcon = () => {
         const icon = weatherData?.weather[0].icon
         return `http://openweathermap.org/img/wn/${icon}@2x.png`
     }
@@ -35,6 +50,7 @@ function WeatherJj() {
 
     return (
         <div className="search-engine">
+
             <div className="search-input">
                 <input
                     type="text"
@@ -43,31 +59,36 @@ function WeatherJj() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                 />
-                <button
+                <Button
                     className="search-button"
+                    variant="secondary"
                     onClick={handleSearch}
                 >
                     Search
-                </button>
+                </Button>
             </div>
 
-            <div className="weatherOfCity">
-                {weatherData ? (
-                    <>
-                        <h3>Weather of {weatherData?.name} </h3>
-                        <img src={geticon()} alt="Weather Icon"/>
-                        <p>The weather is {weatherData?.weather[0].main}</p>
-                        <p>Temperature: {weatherData?.main.temp}</p>
-                        <p>humidity: {weatherData?.main.humidity}</p>
-                        <p>Visibility: {weatherData?.visibility}</p>
-                        <p>Wind spead: {weatherData?.wind.speed}</p>
-
-
-                    </>
-                ) : null}
+            <div className="weatherOfCity" style={{
+                backgroundImage: 'url(' + require(`./assets/${backGroundImage}.jpg`) + ')',
+            }}>
+                {status ? (
+                    <p className="error-status">{status}</p>
+                ) : (
+                    <div className="weatherdata">
+                        {weatherData ? (
+                            <>
+                                <h3>Weather of {weatherData?.name} </h3>
+                                <img src={getIcon()} alt="Weather Icon"/>
+                                <p>The weather is {weatherData?.weather[0].main}</p>
+                                <p>Temperature: {weatherData?.main.temp}</p>
+                                <p>humidity: {weatherData?.main.humidity}</p>
+                                <p>Visibility: {weatherData?.visibility}</p>
+                                <p>Wind spead: {weatherData?.wind.speed}</p>
+                            </>
+                        ) : null}
+                    </div>)}
 
             </div>
-
 
         </div>
     );

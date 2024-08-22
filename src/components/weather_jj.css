@@ -6,6 +6,7 @@
     align-items: center;
     margin-bottom: 3rem;
     margin-top: 1rem;
+
 }
 
 
@@ -40,14 +41,46 @@
 }
 
 .weatherOfCity {
+    width: 40rem;
+    height: 30rem;
     align-items: center;
+    flex-direction: column; /* 使内容垂直排列 */
+    display: flex;
+    justify-content: center; /* 水平方向居中 */
     margin-bottom: 1rem;
+    margin-top: 1rem;
     padding: 1rem;
     row-gap: normal;
     border-radius: 1px;
-    justify-content: space-between;
-    width: 50%;
-    background-color: #ffffff;
-    color: #555555;
+    color: #3e3e3e;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative; /* 为了伪元素定位 */
+    z-index: 1; /* 确保内容显示在伪元素之上 */
 
+}
+
+.weatherOfCity::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.71); /* 黑色半透明层 */
+    z-index: -1; /* 确保透明层在内容下方，背景图片上方 */
+    pointer-events: none; /* 防止透明层阻挡点击 */
+}
+
+.weatherdata{
+    align-items: center;
+    flex-direction: column; /* 使内容垂直排列 */
+    display: flex;
+    justify-content: center; /* 水平方向居中 */
+}
+
+.error-status{
+    font-size: medium;
+    font-weight: bold;
 }
